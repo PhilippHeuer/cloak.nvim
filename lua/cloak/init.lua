@@ -16,6 +16,7 @@ M.opts = {
   highlight_group = 'Comment',
   try_all_patterns = true,
   patterns = { { file_pattern = '.env*', cloak_pattern = '=.+' } },
+  cloak_on_buffer_hidden = false,
 }
 
 M.setup = function(opts)
@@ -43,6 +44,21 @@ M.setup = function(opts)
         group = group,
       }
     )
+
+    -- cloak when the buffer is hidden
+    if M.opts.cloak_on_buffer_hidden == true then
+      vim.api.nvim_create_autocmd(
+        { 'BufHidden' }, {
+          pattern = pattern.file_pattern,
+          callback = function()
+            if M.opts.enabled == false then
+              M.enable()
+            end
+          end,
+          group = group,
+        }
+      )
+    end
   end
 
   vim.api.nvim_create_user_command('CloakEnable', M.enable, {})
